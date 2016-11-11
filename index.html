@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="jquery.js"></script>
+    <script>
+        $(function () {
+
+            $('.shiwu').animate({opacity:0.5},500,function () {
+                $(this).animate({opacity:1},500)
+            });
+            for(var i=0;i<30;i++){
+                for(var j=0;j<40;j++){
+                    $('<div>').attr('id',i+'_'+j).appendTo('.box');
+                }
+            }
+            function finds(s){
+                return $('#'+s.x+'_'+s.y)
+            }
+            make=function () {
+                she=[{x:0,y:0},{x:0,y:1},{x:0,y:2}];
+                tru={};
+                dire='you';
+                $(she).each(function (i,v) {
+                    finds(v).addClass('she');
+                    tru[v.x+'_'+v.y]=true;
+                })
+            }
+            make();
+
+            dire='you';
+            biao={37:'zuo',38:'shang',39:'you',40:'xia'};
+            fan={'zuo':37,'shang':38,'you':39,'xia':40};
+
+            move = function() {
+                jiu = she[she.length-1];
+                if(dire=='you'){
+                    xin={x:jiu.x,y:jiu.y+1};
+                }
+                if(dire=='xia'){
+                    xin={x:jiu.x+1,y:jiu.y};
+                }
+                if(dire=='zuo'){
+                    xin={x:jiu.x,y:jiu.y-1};
+                }
+                if(dire=='shang'){
+                    xin={x:jiu.x-1,y:jiu.y};
+                }
+                if(tru[xin.x+'_'+xin.y]){
+//                    alert('撞到自己了');
+                    $(".over").slideToggle("normal");
+                    clearInterval(t);
+//                    if(confirm('是否重新开始游戏？')){
+//                       ;
+//                    }
+
+                }
+console.log(tru)
+                wen=she[0];
+                she.push(xin);
+                tru[xin.x+'_'+xin.y]=true;
+                delete tru[wen.x+'_'+wen.y];
+                she.shift();
+                $(finds(wen)).removeClass('she');
+                $(finds(xin)).addClass('she');
+                if(xin.x<0||xin.y<0||xin.x>29||xin.y>39){
+
+                    clearInterval(t);
+                    $(".over").slideToggle("normal");
+//                    if(confirm('是否重新开始游戏？')){
+//                        $('.she').removeClass('she');
+//                        console.log($('.she').length)
+//                        make();
+//                        t=setInterval(move,200);
+//                    }
+                }
+                if(xin.x==shiwu.x&&xin.y==shiwu.y){
+                    $('.shiwu').removeClass('shiwu');
+                    shi();
+                    she.unshift(wen);
+                }
+            }
+
+
+
+
+
+            $(document).on('keyup',function (e) {
+                if(Math.abs(e.keyCode-fan[dire])==2){
+                    return
+                }
+                if(e.keyCode==37){
+                    dire=biao[37]
+                }else if(e.keyCode==38){
+                    dire=biao[38]
+                }else if(e.keyCode==39){
+                    dire=biao[39]
+                }else if(e.keyCode==40){
+                    dire=biao[40]
+                }else{
+                    return
+                }
+                move()
+            })
+
+
+
+            var t
+            $(".kaishi").on("click",function () {
+                t=setInterval(move,200);
+                $(".kaishi").css({color: "red",background: "#000"})
+                $(".zanting").css({color: "#0A0A0A",background: "#fff"})
+            })
+            $(".zanting").click(function(){
+                clearInterval(t);
+                $(".kaishi").css({color: "#0A0A0A",background: "#fff"})
+                $(".zanting").css({color: "red",background: "#000"})
+            })
+            $(".over").on("click",function () {
+                $(".over").slideToggle("normal");
+                        $('.she').removeClass('she');
+                         make();
+                        t=setInterval(move,200);
+            })
+
+
+
+
+            shi=function () {
+                do{
+                    var sy=Math.floor(Math.random()*40);
+                    var sx=Math.floor(Math.random()*30);
+                }while(tru[sx+'_'+sy])
+                shiwu={x:sx,y:sy};
+                finds(shiwu).addClass('shiwu')
+            }
+            shi();
+
+        })
+    </script>
+    <style>
+        .big{
+            position: fixed;
+            left:0;
+            right:0;
+            top:0;
+            bottom:0;
+            margin: auto;
+            background-image: url("50654016bf28913c2193b2615f78aab6.jpg");
+            background-size: 100% 100%;
+            /*background: #000000;*/
+        }
+
+        .box{
+            width:800px;
+            height:600px;
+            position: fixed;
+            left:0;
+            right:0;
+            top:0;
+            bottom:0;
+            margin: auto;
+            border: 1px solid red;
+            /*background-image: url("455b9a790c85ff6a934b6cc050ea81ba.jpg");*/
+            /*background-size: 100% 100%;*/
+        }
+        .box div{
+            width:20px;
+            height: 20px;
+            float: left;
+            /*border: 1px solid #fff;*/
+        }
+        .she{
+            background: red;
+            border-radius: 50%;
+        }
+        .shiwu{
+            background-image: url("food.png");
+            background-size: 100%;
+        }
+        .kaishi{
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            color: #0A0A0A;
+            font-size: 30px;
+            line-height: 100px;
+            text-align: center;
+        }
+        .zanting{
+            width: 100px;
+            height: 100px;
+            background: #000;
+            color: red;
+            font-size: 30px;
+            line-height: 100px;
+            text-align: center;
+        }
+
+        .over{
+            max-width:100%;
+            max-height: 100%;
+            background:rgba(0,0,0,0.7);
+            position: fixed;
+            top:0;
+            left:0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            display: none;
+        }
+        .shibai{
+            position: absolute;
+            top:0;
+            left:0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            width: 600px;
+            height: 400px;
+        }
+
+    </style>
+</head>
+<body>
+
+<audio src="背景乐2.mp3" id="music" loop="-1"></audio>
+    <div class="big">
+        <div class="box"></div>
+
+        <div class="kaishi" onclick="document.getElementById('music').play();return false;">开始</div>
+
+        <div class="zanting" onclick="document.getElementById('music').pause();return false;">暂停</div>
+    </div>
+<div class="over">
+    <div class="shibai"><img src="2.jpg" alt=""></div>
+</div>
+
+</body>
+</html>
